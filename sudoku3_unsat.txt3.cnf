@@ -1,5 +1,5 @@
 c sudoku3_unsat.txt3.cnf
-p cnf 27 0
+p cnf 27 93
 1 2 3 0
 4 5 6 0
 7 8 9 0

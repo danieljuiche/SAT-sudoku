@@ -8,7 +8,7 @@ import sys, getopt
 # num_hours_i_spent_on_this_assignment = 0
 
 # 4.5 hours trying to understand
-# 2 hours writing
+# 3.5 hours writing
 
 #####################################################
 #####################################################
@@ -84,6 +84,7 @@ def toCNF (N, instance, outputfile):
 
         new_clause += "0\n"
         clauses.append(new_clause)
+        number_of_clauses += 1
 
     # Constraint 2
     for x in range(1, N+1):
@@ -95,6 +96,7 @@ def toCNF (N, instance, outputfile):
             new_clause += str(-convertIndex(x,y,l,N)) + " "
             new_clause += "0\n"
             clauses.append(new_clause)
+            number_of_clauses += 1
 
     # Constraint 3
     for x in range(1, N+1):
@@ -106,6 +108,7 @@ def toCNF (N, instance, outputfile):
             new_clause += str(-convertIndex(x,j2,k,N)) + " "
             new_clause += "0\n"
             clauses.append(new_clause)
+            number_of_clauses += 1
 
     # Constraint 4
     for j in range(1, N+1):
@@ -117,6 +120,7 @@ def toCNF (N, instance, outputfile):
             new_clause += str(-convertIndex(i2,j,k,N)) + " "
             new_clause += "0\n"
             clauses.append(new_clause)
+            number_of_clauses += 1
 
     # Constraint 5
     for y in range(0, len(instance)):
@@ -127,6 +131,7 @@ def toCNF (N, instance, outputfile):
 
           # Add clauses
           clauses.append(str(convertIndex(x+1,y+1,fixedValue,N)) + " 0\n")
+          number_of_clauses += 1
 
 
     output_file.write("c " + str(outputfile) +"\n")
