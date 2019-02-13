@@ -85,13 +85,39 @@ def main(argv):
 #  solve(VARS, F), pure-elim(F), propagate-units(F), and
 #  any other auxiliary functions
 def solve_dpll(instance, verbosity):
-    #print(instance)
-    #print(instance.VARS)
-    #print(verbosity)
+    print(instance)
+    # print(instance.VARS)
+    # print(verbosity)
     ###########################################
     # Start your code
 
 
+    # Search for x, as well as the negation 'NOT" {+/-x}
+    unit_clauses = []
+    for i in range(0, len(instance.clauses)):
+      if (len(instance.clauses[i]) == 1):
+        unit_clauses.append(instance.clauses[i][0])
+
+    # Now we have a list of the unit clauses we can go
+    # through the list and remove non-unit clauses containing + or -x
+
+    clauses_to_remove = []
+
+    # Store all non-unit clauses containing +/-x
+    for i in range(0, len(instance.clauses)):
+      for j in range(0, len(unit_clauses)):
+        if (unit_clauses[j] in instance.clauses[i]):
+          clauses_to_remove.append(instance.clauses[i])
+          break
+
+    # Remove all non-unit clauses containing +/-x
+    instance.clauses = [ clause for clause in instance.clauses if clause not in clauses_to_remove]
+
+    # Add the single unit clauses back
+    for i in range(0, len(unit_clauses)):
+      instance.clauses.append([unit_clauses[i]])
+
+    print(instance.clauses)
 
     # End your code
     return True
