@@ -86,7 +86,7 @@ def main(argv):
 #  any other auxiliary functions
 def solve_dpll(instance, verbosity):
     print(instance)
-    # print(instance.VARS)
+    print(instance.VARS)
     # print(verbosity)
     ###########################################
     # Start your code
@@ -94,6 +94,12 @@ def solve_dpll(instance, verbosity):
 
     # Search for x, as well as the negation 'NOT" {+/-x}
     unit_clauses = []
+    pure_literal_counters = {}
+    for n in instance.VARS:
+      pure_literal_counters[n] = 0
+      pure_literal_counters[-n] = 0
+
+
     for i in range(0, len(instance.clauses)):
       if (len(instance.clauses[i]) == 1):
         unit_clauses.append(instance.clauses[i][0])
@@ -102,7 +108,7 @@ def solve_dpll(instance, verbosity):
     # through the list and remove non-unit clauses containing + or -x
 
     clauses_to_remove = []
-
+    
     # Store all non-unit clauses containing +/-x
     for i in range(0, len(instance.clauses)):
       for j in range(0, len(unit_clauses)):
@@ -118,6 +124,48 @@ def solve_dpll(instance, verbosity):
       instance.clauses.append([unit_clauses[i]])
 
     print(instance.clauses)
+
+    # Reset clauses_to_remove
+    clauses_to_remove = []
+
+    # Reset unit_clauses to add
+    unit_clauses = []
+
+    # Check to see if each literal is pure
+    for i in range(0, len(instance.clauses)):
+      for j in range(0, len(instance.clauses[i])):
+        pure_literal_counters[instance.clauses[i][j]] += 1
+
+    pure_literals = []
+
+    for i in instance.VARS:
+      if ((pure_literal_counters[i] > 0) and (pure_literal_counters[-i] == 0)):
+        pure_literals.append(i)
+      if ((pure_literal_counters[-i] > 0) and (pure_literal_counters[i] == 0)):
+        pure_literals.append(-i)
+    
+    # Iterate through the clause list and remove all clauses containing
+    # the pure_literals
+    for i in range(0, len(instance.clauses)):
+      for j in range(0, len(pure_literals)):
+        # print("pure_literals[i] " + str(pure_literals[i]))
+        # print("instance.clauses[i] " + str(instance.clauses[i]))
+        if pure_literals[j] in instance.clauses[i]:
+          clauses_to_remove.append(instance.clauses[i])
+
+    # Remove all clauses containing pure literal +x or -x
+    instance.clauses = [ clause for clause in instance.clauses if clause not in clauses_to_remove]
+
+    for i in range(0, len(pure_literals)):
+      unit_clauses.append(pure_literals[i])
+    # Add the pure literals as unit clauses clauses back
+    for i in range(0, len(unit_clauses)):
+      instance.clauses.append([unit_clauses[i]])
+
+    print(instance.clauses)
+    # print(sys.maxsize)
+
+    # print(instance.clauses)
 
     # End your code
     return True
