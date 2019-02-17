@@ -7,8 +7,9 @@ import sys, getopt
 # assignment here
 # num_hours_i_spent_on_this_assignment = 0
 
-# 4.5 hours trying to understand
-# 3.5 hours writing
+# 4.5 hours understanding
+# 3.5 hours on sudoku
+# 20 hours on DPLLsat
 
 #####################################################
 #####################################################
