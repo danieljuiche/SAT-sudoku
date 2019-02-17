@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import sys, getopt, copy, random, operator
+import sys, getopt, copy, random, operator, time
 
 class SatInstance:
     def __init__(self):
@@ -90,80 +90,56 @@ def solve_dpll(instance, verbosity):
     # print(verbosity)
     ###########################################
     # Start your code
-    test_F = [
-      [1],
-      [1, 99],
-      [-1, 4, 5],
-      [-2],
-      [2, 3, 5],
-      [-2, 100, 101],
-      [999, 9],
-      [-1]
-    ]
 
-    test_F2 = [
-      [1, 2],
-      [-1, 3],
-      [-2, -3],
-      [-4, 4],
-      [5],
-      [6, 7],
-      [5, 6, 7],
-      [5, -1, 2],
-      [6, -2, -3]
+    # Timer
+    # start = time.time()
 
-    ]
-
-    test_empty_clause = [
-      [-1],
-      [1],
-      [1, 2],
-      [1, -1]
-    ]
-
-    # print(instance.clauses)
-
-    # print(propagate_units(test_empty_clause))
-    # propagate_units(instance.clauses)
-    # instance.clauses = propagate_units(instance.clauses)
-    # instance.clauses = propagate_units(instance.clauses)
-    # instance.clauses = propagate_units(instance.clauses)
-    # instance.clauses = propagate_units(instance.clauses)
-    # instance.clauses = propagate_units(instance.clauses)
-    # instance.clauses = propagate_units(instance.clauses)
-    # instance.clauses = propagate_units(instance.clauses)
-    # instance.clauses = propagate_units(instance.clauses)
-    # instance.clauses = propagate_units(instance.clauses)
-    # instance.clauses = propagate_units(instance.clauses)
-    # instance.clauses = pure_elim(instance.clauses)
-    # instance.clauses = propagate_units(instance.clauses)
-    # instance.clauses = pure_elim(instance.clauses)
-
-    # print(instance.clauses)
-
-
-    # print(propagate_units(instance.clauses))
-
-    # test_F = propagate_units(test_F)
-
-    # print(propagate_units(test_F))
-
-    # print(pure_elim(test_F2))
-
-
+    # Initialize variables
     VAR_LIST = instance.VARS
     clauses = copy.deepcopy(instance.clauses)
-
-
     clauses = solve(VAR_LIST, clauses, [])
 
-    print("Finished")
-    
-    # print(clauses)
-    # print(instance.clauses)
-    # print(sys.maxsize)
+    # Print resulting satisfiability
+    if (clauses == []):
+      print("UNSAT")
+    else:
+      print("SAT")
 
-    # print(instance.clauses)
+    # Handle verbosity
+    if (verbosity):
+      unit_literal_set = set()
+      true_literals = []
+      false_literals = []
+
+      true_literal_string = ""
+      false_literal_string = ""
+
+      for i in clauses:
+        value = i[0]
+        if (value > 0):
+          true_literals.append(value)
+          unit_literal_set.add(value)
+        if (value < 0):
+          false_literals.append(value)
+          unit_literal_set.add(-value)
+
+      set_difference = VAR_LIST - unit_literal_set
+      # Add unused variables to true literal
+      for i in set_difference:
+        true_literals.append(i)
+
+      for i in true_literals:
+        true_literal_string += str(i) + " "
+
+      for i in false_literals:
+        false_literal_string += str(i) + " "
+
+      print(true_literal_string)
+      print(false_literal_string)
+    
+    # Timer
+    # end = time.time()
+    # print(end - start)
 
     # End your code
     return True
@@ -172,28 +148,26 @@ def solve_dpll(instance, verbosity):
 
 def solve(VARS, F, explored):
   explored_variables = copy.deepcopy(explored)
-  # print("PRINTING!")
-  # print(F)
 
   F = propagate_units(F)
-  print("Printing after propagate and elimination: ")
-  print(F)
+  # print("Printing after propagate and elimination: ")
+  # print(F)
 
   if (len(F) == 0):
-    print("EMPTY UNSAT FROM PROPAGATE")
+    # print("EMPTY UNSAT FROM PROPAGATE")
     return []
 
   F = pure_elim(F)
-  print("Printing after propagate and elimination: ")
-  print(F)
+  # print("Printing after propagate and elimination: ")
+  # print(F)
 
   if (len(F) == 0):
-    print("EMPTY UNSAT FROM ELIMINATION")
+    # print("EMPTY UNSAT FROM ELIMINATION")
     return []
 
   for i in F:
     if (i == []):
-      print("EMPTY CLAUSE FOUND IN F")
+      # print("EMPTY CLAUSE FOUND IN F")
       return []
 
   num = 0
@@ -208,11 +182,30 @@ def solve(VARS, F, explored):
       num += 0
 
   if (num == len(VARS)):
-    print("NUM == LEN VARS")
+    # print("NUM == LEN VARS")
+    return F
+
+  """ Check to see if F consists of all unit clauses and is consistent """
+  all_unit_clause_flag = False
+  inconsistent_set_flag = False
+  length_of_F = len(F)
+  counter = 0
+  for i in F:
+    if (len(i) == 1):
+      counter += 1
+  if (counter == length_of_F):
+    all_unit_clause_flag = True
+
+  for i in F:
+    value = i[0]
+    if ([-value] in F):
+      inconsistent_set_flag = True
+
+  if (all_unit_clause_flag and not inconsistent_set_flag):
     return F
 
   x = pick_a_variable(VARS, explored_variables)
-  print("PICKED VARIABLE " + str(x))
+  # print("PICKED VARIABLE " + str(x))
 
   explored_variables.append(x)
 
@@ -240,7 +233,7 @@ def propagate_units(F):
   while (True):
 
     if ([] in F):
-      print("EMPTY CLAUSE FOUND")
+      # print("EMPTY CLAUSE FOUND")
       break
 
     # Define variables to use
@@ -316,9 +309,9 @@ def propagate_units(F):
 
 
     if (initial_F_length == final_F_length):
-      print("NO CHANGE")
+      # print("NO CHANGE")
       if (initial_unit_clauses_length == final_unit_clauses_length):
-        print("NO CHANGE IN UNIT CLAUSES")
+        # print("NO CHANGE IN UNIT CLAUSES")
         break
 
   return F
